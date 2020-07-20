@@ -25,6 +25,7 @@
             const data = await response.json();
             console.log("Question:")
             console.log(data);
+            question = data;
             document.getElementById('question').textContent = data;
         }
         var ip;

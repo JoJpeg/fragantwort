@@ -17,11 +17,10 @@
     <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"> 
     </script> 
     <script> 
-        
+        var question;         
         //TODO: GET random question from server
-        getData();
-        async function getData(){
-            var question; 
+        getQuestion();
+        async function getQuestion(){
             var response = await fetch('/getQuestion');
             const data = await response.json();
             console.log("Question:")
@@ -46,7 +45,6 @@
 
         function warn(){
             alert("Deine Antwort wurde Verschickt. Warte 10 Sekunden um die nächste zu Verschicken.");
-
         }
 
         function packAndSend(){
@@ -62,6 +60,7 @@
             };
 
             fetch('/sendData', options);
+            getQuestion();
         }
 
         function waitForIP(){

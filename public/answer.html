@@ -5,7 +5,8 @@
 
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script>
-        var socket = io('http://localhost:3000');
+        var host = location.origin.replace(/^http/, 'ws');
+        var socket = io(host);
         socket.on('connect', function(){});
         socket.on('event', function(data){});
         socket.on('disconnect', function(){});

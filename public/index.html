@@ -45,7 +45,7 @@
         }
 
         function warn(){
-            alert("Deine Antwort wurde Verschickt. Warte 10 Sekunden um die nächste zu Verschicken.");
+            alert("Deine Antwort wurde Verschickt. Warte mindestens 10 Sekunden um die nächste zu Verschicken.");
         }
 
         function packAndSend(){
@@ -62,6 +62,7 @@
 
             fetch('/sendData', options);
             getQuestion();
+            document.getElementById("answer").value = "";
         }
 
         function waitForIP(){

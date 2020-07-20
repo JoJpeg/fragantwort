@@ -12,7 +12,7 @@ const mongo = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: 
 const { request, response } = require('express');
 const app = express();
 app.set('port', process.env.PORT || 8080);
-var server = app.listen(process.env.PORT || 8080, () => console.log("listening to " + process.env.PORT));
+var server = app.listen(process.env.PORT || 8080, () => console.log("Server stated"));
 app.use(express.static('public'));
 app.use(express.json({limit: '1mb'} ));
 
@@ -29,8 +29,8 @@ console.log(questions);
 
 app.post('/sendData', (request, response) => {
     //TODO: log ips for spam
-    console.log('I got a request:');
-    console.log(request.body);
+    //console.log('I got a request:');
+    //console.log(request.body);
     data = request.body;
     const timestamp = Date.now();
     data.timestamp = timestamp;
@@ -49,73 +49,62 @@ app.get('/getQuestion', (request, response) => {
 
 
 function verify(data){
-    var resultArray; 
-    mongo.connect(url, function(err, db) {
+    var resultArray = []; 
+    mongo.connect(function(err, db) {
         assert.equal(null, err);
 
-        const cursor = db.collection('antworten').find();
-
+        const cursor = db.db('fragantwort').collection('antworten').find();
+        var spam = false;
         cursor.forEach(function(doc,err){
             assert.equal(null, err);
             resultArray.push(doc);
         }, function() {
-            db.close();
-            resultArray.find({ip: data.ip}, function(err, docs){
-                //if(docs.length == 0) return;
-                var timePassed;
-                var existingQuestions;
-                docs.sort(function(a, b){
-                    return a.timestamp - b.timestamp;
-                });
-                existingQuestions = docs;
-                timePassed = data.timestamp - docs[docs.length-1].timestamp;
-                console.log(data.ip + " (" + timePassed + "):" + data.answer);
+            
+            var entries = [];
+            for (var i = 0; i < resultArray.length; i++){
+                if (resultArray[i].ip == data.ip){
+                    entries.push(resultArray[i]);
+                }
+              }
+
+            entries.sort(function(a, b){
+                return a.timestamp - b.timestamp;
+            });
+            
+            entries.forEach(function(entry){
+                timePassed = data.timestamp - entry.timestamp;
+                //console.log(entry.ip + " (" + timePassed + "):" + entry.answer);
                 if(timePassed < 10000 ) {
-                    console.log("Spam");
-                    return false;
-                }else{
-                    saveData(data);
+                    console.log("Spam:");
+                    console.log(data)
+                    spam = true;
                 }
             });
 
+            if(!spam){
+                const collection = mongo.db("fragantwort").collection("antworten");
+                collection.insertOne(data, function(err, res) {
+                    console.log("Neue Antwort: ");
+                    console.log(data);
+                }, function(){
+                    db.close(); 
+                });
+    
+                notifyAnswerSite(data); 
+            }
+
         });
     });
-
-    
-
-}
-
-function saveData(data){
-    mongo.connect(url, function(err, db) {
-        if (err) throw err;
-        //const collection = mongo.db("fragantwort").collection("antworten");
-        db.collection.insertOne(data, function(err, res) {
-          if (err) {
-              throw err;
-          }
-          else {
-            console.log("document inserted");
-            console.log(data);
-            db.close();
-          }
-        });
-      
-        db.close();
-      });
-    //database.insert(data);
-    notifyAnswerSite(data);
 }
 
 function loadQuestions(){
-    console.log("loading Questions");
     questions = require('./public/questions.json');
 }
 
 function newConnection(socket) {
-    console.log("connection established: " + socket.id);
+    console.log("New answer reader connected: " + socket.id);
 }
 
 function notifyAnswerSite(data){
-    console.log("sending answer");
     io.emit('answer', data.answer);
 }

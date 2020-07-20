@@ -1,10 +1,18 @@
 const express = require('express');
-const Datastore = require('nedb');
+const assert = require('assert');
+
+
+const url = "mongodb+srv://main_user:PHEFOcEymMuHHBWU@fragantwort.kgc4b.mongodb.net/frageantwort?retryWrites=true&w=majority";
+const MongoClient = require('mongodb').MongoClient;
+const mongo = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true});
+
+//const mongo = require('mongodb');
+
 
 const { request, response } = require('express');
 const app = express();
 app.set('port', process.env.PORT || 8080);
-var server = app.listen(process.env.PORT || 8080, () => console.log("listening to " + app.PORT));
+var server = app.listen(process.env.PORT || 8080, () => console.log("listening to " + process.env.PORT));
 app.use(express.static('public'));
 app.use(express.json({limit: '1mb'} ));
 
@@ -16,13 +24,8 @@ io.sockets.on('connection', newConnection);
 var questions;
 loadQuestions();
 console.log(questions);
-setTimeout(loadQuestions, 10000000);
+//setTimeout(loadQuestions, 10000000);
 
-//C:\Users\Jo3\Dropbox (Privat)\Projekte\Laden\Fragen Site\questions.txt
-//console.log(decDir);
-
-const database = new Datastore('database.db');
-database.loadDatabase();
 
 app.post('/sendData', (request, response) => {
     //TODO: log ips for spam
@@ -46,27 +49,60 @@ app.get('/getQuestion', (request, response) => {
 
 
 function verify(data){
-    database.find({ip: data.ip}, function(err, docs){
-        //if(docs.length == 0) return;
-        var timePassed;
-        var existingQuestions;
-        docs.sort(function(a, b){
-            return a.timestamp - b.timestamp;
-        })
-        existingQuestions = docs;
-        timePassed = data.timestamp - docs[docs.length-1].timestamp;
-        console.log(data.ip + " (" + timePassed + "):" + data.answer);
-        if(timePassed < 10000 ) {
-            console.log("Spam");
-            return false;
-        }else{
-            saveData(data);
-        }
+    var resultArray; 
+    mongo.connect(url, function(err, db) {
+        assert.equal(null, err);
+
+        const cursor = db.collection('antworten').find();
+
+        cursor.forEach(function(doc,err){
+            assert.equal(null, err);
+            resultArray.push(doc);
+        }, function() {
+            db.close();
+            resultArray.find({ip: data.ip}, function(err, docs){
+                //if(docs.length == 0) return;
+                var timePassed;
+                var existingQuestions;
+                docs.sort(function(a, b){
+                    return a.timestamp - b.timestamp;
+                });
+                existingQuestions = docs;
+                timePassed = data.timestamp - docs[docs.length-1].timestamp;
+                console.log(data.ip + " (" + timePassed + "):" + data.answer);
+                if(timePassed < 10000 ) {
+                    console.log("Spam");
+                    return false;
+                }else{
+                    saveData(data);
+                }
+            });
+
+        });
     });
+
+    
+
 }
 
 function saveData(data){
-    database.insert(data);
+    mongo.connect(url, function(err, db) {
+        if (err) throw err;
+        //const collection = mongo.db("fragantwort").collection("antworten");
+        db.collection.insertOne(data, function(err, res) {
+          if (err) {
+              throw err;
+          }
+          else {
+            console.log("document inserted");
+            console.log(data);
+            db.close();
+          }
+        });
+      
+        db.close();
+      });
+    //database.insert(data);
     notifyAnswerSite(data);
 }
 

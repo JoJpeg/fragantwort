@@ -2,9 +2,10 @@
   "name": "fragen-site",
   "version": "1.0.0",
   "description": "a little service to answer questions",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "keywords": [
     "questions",

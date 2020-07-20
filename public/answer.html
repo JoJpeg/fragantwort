@@ -1,0 +1,35 @@
+<body>
+    <button onclick="start()">start</button>    
+    <h2 id="answer">Hier steht die letzte Antwort</h2>
+
+
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script>
+        var socket = io('http://localhost:3000');
+        socket.on('connect', function(){});
+        socket.on('event', function(data){});
+        socket.on('disconnect', function(){});
+
+        function speak(text) { 
+            if(text == null){
+                console.log("null text");
+                return;
+            }
+            var msg = new SpeechSynthesisUtterance();
+            msg.text = text;
+            window.speechSynthesis.speak(msg);
+        }
+
+        function start(){
+            speak("Ich lese nun die Antworten vor");
+        }
+
+        function answer(data){
+            document.getElementById('answer').textContent = data;
+            speak(data);
+        }
+
+        socket.on('answer', answer);
+        
+    </script> 
+</body>

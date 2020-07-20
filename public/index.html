@@ -1,0 +1,79 @@
+<body>
+
+    <p>
+        <h2 id="question">Bist du?</h2>
+    </p>
+
+    <div>
+        <textarea name="answer" id="answer" cols="30" rows="10"></textarea>
+    </div>  
+
+    <div>
+        <button onclick="sendData()">absenden</button>
+    </div>
+
+    <p>Deine Antwort kann von anderen gelesen werden. Vermeide also bitte Personenangaben</p>
+    
+    <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"> 
+    </script> 
+    <script> 
+        
+        //TODO: GET random question from server
+        getData();
+        async function getData(){
+            var question; 
+            var response = await fetch('/getQuestion');
+            const data = await response.json();
+            console.log("Question:")
+            console.log(data);
+            document.getElementById('question').textContent = data;
+        }
+        var ip;
+
+        function sendData(){
+            $.getJSON("https://api.ipify.org?format=json", 
+                function(data) { 
+                ip = data.ip; 
+            });
+            
+            waitForIP();
+            warn();
+            //dear code inspector! 
+            //we are just requesting your ip to prevent spam. 
+            //we hope you dont mind <3
+
+        }
+
+        function warn(){
+            alert("Deine Antwort wurde Verschickt. Warte 10 Sekunden um die nächste zu Verschicken.");
+
+        }
+
+        function packAndSend(){
+            const answer = document.getElementById("answer").value;
+            const data =  {question, answer, ip};
+
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type' : 'application/json'
+                },
+                body: JSON.stringify(data)
+            };
+
+            fetch('/sendData', options);
+        }
+
+        function waitForIP(){
+            if(typeof ip !== "undefined"){
+                //variable exists, do what you want
+                packAndSend();
+            }
+            else{
+                setTimeout(waitForIP, 250);
+            }
+        
+        }
+    </script>
+    
+</body>

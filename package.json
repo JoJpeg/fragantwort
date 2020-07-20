@@ -1,0 +1,23 @@
+{
+  "name": "fragen-site",
+  "version": "1.0.0",
+  "description": "a little service to answer questions",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "questions",
+    "tts",
+    "fun",
+    "stuff"
+  ],
+  "author": "jonas eschner",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nedb": "^1.8.0",
+    "socket.io": "^2.3.0",
+    "xmlhttprequest": "^1.8.0"
+  }
+}

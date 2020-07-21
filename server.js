@@ -28,9 +28,6 @@ console.log(questions);
 
 
 app.post('/sendData', (request, response) => {
-    //TODO: log ips for spam
-    //console.log('I got a request:');
-    //console.log(request.body);
     data = request.body;
     const timestamp = Date.now();
     data.timestamp = timestamp;
@@ -43,7 +40,6 @@ app.post('/sendData', (request, response) => {
 app.get('/getQuestion', (request, response) => {
     var r = Math.round(Math.random() * (questions.data.length -1));
     var q = questions['data'][parseInt(r)];
-    console.log("Question " + r + "/" + questions.data.length + " :" + q);
     response.json(q);
 });
 
@@ -52,46 +48,12 @@ function verify(data){
     var resultArray = []; 
     mongo.connect(function(err, db) {
         assert.equal(null, err);
-
-        const cursor = db.db('fragantwort').collection('antworten').find();
-        var spam = false;
-        cursor.forEach(function(doc,err){
-            assert.equal(null, err);
-            resultArray.push(doc);
-        }, function() {
-            
-            var entries = [];
-            for (var i = 0; i < resultArray.length; i++){
-                if (resultArray[i].ip == data.ip){
-                    entries.push(resultArray[i]);
-                }
-              }
-
-            entries.sort(function(a, b){
-                return a.timestamp - b.timestamp;
-            });
-            
-            entries.forEach(function(entry){
-                timePassed = data.timestamp - entry.timestamp;
-                //console.log(entry.ip + " (" + timePassed + "):" + entry.answer);
-                if(timePassed < 10000 ) {
-                    console.log("Spam:");
-                    console.log(data)
-                    spam = true;
-                }
-            });
-
-            if(!spam){
-                const collection = mongo.db("fragantwort").collection("antworten");
-                collection.insertOne(data, function(err, res) {
-                    console.log("Neue Antwort: ");
-                    console.log(data);
-                });
-    
-                notifyAnswerSite(data); 
-            }
-
+        const collection = mongo.db("fragantwort").collection("antworten");
+        collection.insertOne(data, function(err, res) {
+            console.log("Neue Antwort: ");
+            console.log(data);
         });
+        notifyAnswerSite(data); 
     }, function(){
         db.close();
     });

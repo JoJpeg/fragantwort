@@ -1,10 +1,10 @@
 <body>
 
-    <p>
+    <div style="width: 100%;">
         <h2 id="question">Bist du?</h2>
-    </p>
+    </div>
 
-    <div>
+    <div style="width: 100%;">
         <textarea name="answer" id="answer" cols="30" rows="10"></textarea>
     </div>  
 
@@ -14,67 +14,7 @@
 
     <p>Deine Antwort kann von anderen gelesen werden. Vermeide also bitte Personenangaben</p>
     
-    <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"> 
-    </script> 
-    <script> 
-        var question;         
-        //TODO: GET random question from server
-        getQuestion();
-        async function getQuestion(){
-            var response = await fetch('/getQuestion');
-            const data = await response.json();
-            console.log("Question:")
-            console.log(data);
-            question = data;
-            document.getElementById('question').textContent = data;
-        }
-        var ip;
-
-        function sendData(){
-            $.getJSON("https://api.ipify.org?format=json", 
-                function(data) { 
-                ip = data.ip; 
-            });
-            
-            waitForIP();
-            warn();
-            //dear code inspector! 
-            //we are just requesting your ip to prevent spam. 
-            //we hope you dont mind <3
-
-        }
-
-        function warn(){
-            //alert("Deine Antwort wurde Verschickt. Warte mindestens 10 Sekunden um die nächste zu Verschicken.");
-        }
-
-        function packAndSend(){
-            const answer = document.getElementById("answer").value;
-            const data =  {question, answer, ip};
-
-            const options = {
-                method: 'POST',
-                headers: {
-                    'Content-Type' : 'application/json'
-                },
-                body: JSON.stringify(data)
-            };
-
-            fetch('/sendData', options);
-            getQuestion();
-            document.getElementById("answer").value = "";
-        }
-
-        function waitForIP(){
-            if(typeof ip !== "undefined"){
-                //variable exists, do what you want
-                packAndSend();
-            }
-            else{
-                setTimeout(waitForIP, 250);
-            }
-        
-        }
-    </script>
+    <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"> </script> 
+    <script src= "js/questions.js"> </script>
     
 </body>

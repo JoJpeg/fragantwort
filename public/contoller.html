@@ -1,0 +1,55 @@
+<body>
+
+    <div>
+        Lets Controll the stuff
+    </div>
+
+    <div id="answer">
+        Antworten
+    </div>
+
+    <div> 
+        <button onclick="read()">read</button>
+    </div>
+
+    <script>
+
+var host = location.origin.replace(/^http/, 'ws');
+        var socket = io(host);
+        socket.on('connect', function(){});
+        socket.on('event', function(data){});
+        socket.on('disconnect', function(){});
+
+        function speak(text) { 
+            if(text == null){
+                console.log("null text");
+                return;
+            }
+            var msg = new SpeechSynthesisUtterance();
+            msg.text = text;
+            window.speechSynthesis.speak(msg);
+        }
+
+        function start(){
+            speak("Ich lese nun die Antworten vor");
+        }
+
+        function answer(data){
+            document.getElementById('answer').textContent = data;
+            speak(data);
+        }
+
+        function newData(data){
+            
+        }
+
+        function read(){
+            
+        }
+
+        socket.on('answer', answer);
+        socket.on('newData', newData);
+
+    </script>
+
+</body>

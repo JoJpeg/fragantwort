@@ -43,9 +43,27 @@ app.get('/getQuestion', (request, response) => {
     response.json(q);
 });
 
+app.get('/getAnswers', (request, response) => {
+    var answers = [];
+    console.log("someone is fetching answers: " + Date.now());
+    mongo.connect(function(err, db) {
+        if(err) console.log(err);
+        assert.equal(null, err);
+        const cursor = db.db('fragantwort').collection('antworten').find();
+
+        cursor.forEach(function(doc,err){
+            assert.equal(null, err);
+            answers.push(doc);
+        }, function(){
+            //console.log("sending: " + answers);
+            response.json(answers);
+        }, function(){
+            db.close();
+        });
+    });
+});
 
 function verify(data){
-    var resultArray = []; 
     mongo.connect(function(err, db) {
         assert.equal(null, err);
         const collection = mongo.db("fragantwort").collection("antworten");
@@ -69,4 +87,5 @@ function newConnection(socket) {
 
 function notifyAnswerSite(data){
     io.emit('answer', data.answer);
+    io.emit('newData');
 }

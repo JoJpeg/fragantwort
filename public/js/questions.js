@@ -1,6 +1,9 @@
 
 var question;    
 var lastTimeStamp = 0;     
+
+
+
 getQuestion();
 async function getQuestion(){
     var response = await fetch('/getQuestion');
@@ -32,3 +35,7 @@ function sendData(){
     getQuestion();
     document.getElementById("answer").value = "";
 }
+
+var f = document.getElementById('answer');
+ f.focus();
+ f.value += '';

@@ -1,0 +1,73 @@
+<body style="font-family: Arial, Helvetica, sans-serif;">
+
+    <h2 id="allData">
+        Lade Antworten..
+    </h2>
+
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script>
+
+        var host = location.origin.replace(/^http/, 'ws');
+        var socket = io(host);
+        var answers = [];
+
+        socket.on('connect', function(){});
+        socket.on('event', function(data){});
+        socket.on('disconnect', function(){});
+
+        loadAnswers();
+
+        function speak(text) { 
+            if(text == null){
+                console.log("null text");
+                return;
+            }
+            var msg = new SpeechSynthesisUtterance();
+            msg.text = text;
+            window.speechSynthesis.speak(msg);
+        }
+
+        function start(){
+            speak("Ich lese nun die Antworten vor");
+        }
+
+        function answer(data){
+            const autoRead = document.getElementById('autoRead');
+            //document.getElementById('answer').textContent = data;
+            if(autoRead.checked) speak(data);
+        }
+
+
+        ///new data incoming
+        async function newData(data){
+            loadAnswers();
+        }
+
+        async function loadAnswers(){
+            var response = await fetch('/getAnswers');
+            answers  = await response.json();
+            console.log(answers);
+            
+            answers.sort(function(a,b){
+                return b.timestamp - a.timestamp;
+            });
+
+            const textAnswers = [];
+            answers.forEach(function(element){
+                var text = String(element.answer);
+                //text = text.charAt(text.length-1);
+                var sign = text.charAt(text.length-1);
+
+                if(sign != '.' && sign != '?' && sign != '!'){
+                    text += '.';
+                }
+                textAnswers.push(" " + text);
+            });
+            document.getElementById('allData').innerHTML = textAnswers.join(""); 
+        }
+
+        socket.on('newData', newData);
+
+    </script>
+
+</body>

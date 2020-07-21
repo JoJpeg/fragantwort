@@ -1,0 +1,84 @@
+<body>
+
+    <div> 
+        <button onclick="read()">aktuellstes lesen</button>
+        <button onclick="readRandom()">zufälliges lesen</button>
+        <input type="checkbox" id="autoRead" >
+        <label for="autoRead"> automatisch lesen</label><br>    
+    </div>
+
+    <div id="allData">
+        Data:
+    </div>
+
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script>
+
+        var host = location.origin.replace(/^http/, 'ws');
+        var socket = io(host);
+        var answers = [];
+
+        socket.on('connect', function(){});
+        socket.on('event', function(data){});
+        socket.on('disconnect', function(){});
+
+        loadAnswers();
+
+        function speak(text) { 
+            if(text == null){
+                console.log("null text");
+                return;
+            }
+            var msg = new SpeechSynthesisUtterance();
+            msg.text = text;
+            window.speechSynthesis.speak(msg);
+        }
+
+        function start(){
+            speak("Ich lese nun die Antworten vor");
+        }
+
+        function answer(data){
+            const autoRead = document.getElementById('autoRead');
+            //document.getElementById('answer').textContent = data;
+            if(autoRead.checked) speak(data);
+        }
+
+        function read(){
+            speak(String(answers[0].answer));
+        }
+        
+        function readRandom(){
+            var r = Math.round(Math.random() * (answers.length -1));
+            speak(String(answers[r].answer));
+        }
+        
+
+        ///new data incoming
+        async function newData(data){
+            loadAnswers();
+        }
+
+        async function loadAnswers(){
+            var response = await fetch('/getAnswers');
+            answers  = await response.json();
+            console.log(answers);
+            
+            answers.sort(function(a,b){
+                return b.timestamp - a.timestamp;
+            });
+
+            const textAnswers = [];
+            answers.forEach(function(element){
+                console.log("answer: " + element.answer);
+                textAnswers.push(String(element.answer) + "<br>");
+            });
+            document.getElementById('allData').innerHTML = textAnswers; 
+        }
+
+        socket.on('answer', answer);
+        socket.on('newData', newData);
+
+    </script>
+
+</body>

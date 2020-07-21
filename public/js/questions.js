@@ -7,6 +7,11 @@ var scale = screen.width /siteWidth
 
 document.querySelector('meta[name="viewport"]').setAttribute('content', 'width='+siteWidth+', initial-scale='+scale+'');
 
+setTimeout(function() {
+    var f = document.getElementById('answer');
+    f.focus();
+    f.value += '';
+}, 100);
 
 
 getQuestion();
@@ -41,6 +46,3 @@ function sendData(){
     document.getElementById("answer").value = "";
 }
 
-var f = document.getElementById('answer');
- f.focus();
- f.value += '';

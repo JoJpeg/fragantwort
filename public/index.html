@@ -1,32 +1,36 @@
 <body style="font-family: Arial, Helvetica, sans-serif;">
-
-    <div style="width: 100%;">
-        <h2 id="question">Bist du?</h2>
-    </div>
-
-    <div >
-        <textarea style="
-        width: 100%;  
-        resize: none; 
-        border-style: 
-        none; 
-        appearance: none;
-        font-family: sans-serif;
-        font-size: 25;
-        outline: none;
-        " name="answer" id="answer" cols="30" rows="10"></textarea>
-    </div>  
-
     <div>
-        <button style="border-radius: 15px;
-        border-color: white;
-        border-style: none;
-        font-size: 30;" onclick="sendData()">→</button>
-    </div>
+        <div style="width: 100%;">
+            <p style="
+            font-size: 4em;
+            appearance: none;
+            font-family: sans-serif;
+            " id="question">
+            Bist du?
+        </p>
+        </div>
 
-    <p>Deine Antwort kann von anderen gelesen werden. Vermeide also bitte Personenangaben</p>
-    
-    <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"> </script> 
-    <script src= "js/questions.js"> </script>
-    
+        <div >
+            <textarea style="
+            width: 100%;  
+            border-style: none; 
+            appearance: none;
+            font-family: sans-serif;
+            font-size: 4em;
+            outline: none;
+            " name="answer" id="answer" cols="30" rows="10"></textarea>
+        </div>  
+
+        <div>
+            <button style="border-radius: 15px;
+            border-color: white;
+            border-style: none;
+            font-size: 30;" onclick="sendData()">→</button>
+        </div>
+
+        <p>Deine Antwort kann von anderen gelesen werden. Vermeide also bitte Personenangaben</p>
+        
+        <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"> </script> 
+        <script src= "js/questions.js"> </script>
+    </div>
 </body>

@@ -1,4 +1,4 @@
-<body style="font-family: Arial, Helvetica, sans-serif;">
+<body style="font-family: Arial, Helvetica, sans-serif; overflow: hidden;">
 
     <h2 id="allData">
         Lade Antworten..
@@ -16,6 +16,8 @@
         socket.on('disconnect', function(){});
 
         loadAnswers();
+
+
 
         function speak(text) { 
             if(text == null){

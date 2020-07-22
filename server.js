@@ -65,12 +65,19 @@ app.get('/getAnswers', (request, response) => {
 
 function verify(data){
     mongo.connect(function(err, db) {
+
         assert.equal(null, err);
         const collection = mongo.db("fragantwort").collection("antworten");
+        if(data.answer == null || data.answer == ""){
+            console.log("Empty Data")
+            return;
+        }
+
         collection.insertOne(data, function(err, res) {
             console.log("Neue Antwort: ");
             console.log(data);
         });
+        
         notifyAnswerSite(data); 
     }, function(){
         db.close();

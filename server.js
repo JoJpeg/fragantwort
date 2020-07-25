@@ -74,8 +74,10 @@ function verify(data){
         }
 
         collection.insertOne(data, function(err, res) {
+
             console.log("Neue Antwort: ");
             console.log(data);
+            lastAnswer = data.answer;
         });
 
         notifyAnswerSite(data); 

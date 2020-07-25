@@ -1,6 +1,6 @@
 const express = require('express');
 const assert = require('assert');
-
+const lastAnswer = "";
 
 const url = "mongodb+srv://main_user:PHEFOcEymMuHHBWU@fragantwort.kgc4b.mongodb.net/frageantwort?retryWrites=true&w=majority";
 const MongoClient = require('mongodb').MongoClient;
@@ -68,8 +68,8 @@ function verify(data){
 
         assert.equal(null, err);
         const collection = mongo.db("fragantwort").collection("antworten");
-        if(data.answer == null || data.answer == ""){
-            console.log("Empty Data")
+        if(data.answer == null || data.answer == "" || data.answer == lastAnswer){
+            console.log("Unwanted Data: [" + data.answer + "]");
             return;
         }
 
@@ -77,7 +77,7 @@ function verify(data){
             console.log("Neue Antwort: ");
             console.log(data);
         });
-        
+
         notifyAnswerSite(data); 
     }, function(){
         db.close();

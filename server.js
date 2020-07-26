@@ -1,6 +1,6 @@
 const express = require('express');
 const assert = require('assert');
-const lastAnswer = "";
+var lastAnswer = "";
 
 const url = "mongodb+srv://main_user:PHEFOcEymMuHHBWU@fragantwort.kgc4b.mongodb.net/frageantwort?retryWrites=true&w=majority";
 const MongoClient = require('mongodb').MongoClient;
